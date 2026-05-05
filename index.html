@@ -2,94 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <title>User Registration</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f4f6f9;
+    }
+    .container {
+      max-width: 500px;
+      margin-top: 80px;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="d-flex">
+<div class="container">
+  <h3 class="text-center mb-4">User Registration</h3>
 
-  <!-- Sidebar -->
-  <div class="sidebar p-3">
-    <h3>Dashboard</h3>
-    <ul class="nav flex-column">
-      <li class="nav-item"><a href="#" class="nav-link">Home</a></li>
-      <li class="nav-item"><a href="display.html" class="nav-link">Users</a></li>
-    </ul>
-  </div>
+  <form id="userForm">
+    <input type="text" id="name" class="form-control mb-3" placeholder="Enter Name" required>
+    <input type="email" id="email" class="form-control mb-3" placeholder="Enter Email" required>
+    
+    <button class="btn btn-primary w-100">Register</button>
+  </form>
 
-  <!-- Main Content -->
-  <div class="container-fluid p-4">
-
-    <h2>Admin Panel</h2>
-
-    <!-- Cards -->
-    <div class="row mt-4">
-      <div class="col-md-4">
-        <div class="card text-white bg-primary p-3">
-          <h4>Total Users</h4>
-          <p id="totalUsers">0</p>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card text-white bg-success p-3">
-          <h4>Active Users</h4>
-          <p>120</p>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card text-white bg-danger p-3">
-          <h4>Orders</h4>
-          <p>75</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Form -->
-    <div class="mt-5">
-      <h4>Add User</h4>
-
-      <form id="userForm">
-        <input type="text" id="name" class="form-control mb-2" placeholder="Name" required>
-        <input type="email" id="email" class="form-control mb-2" placeholder="Email" required>
-        <button class="btn btn-primary">Add User</button>
-      </form>
-    </div>
-
-  </div>
+  <a href="display.html" class="btn btn-success w-100 mt-3">View Users</a>
 </div>
 
 <script>
-let form = document.getElementById("userForm");
-
-form.addEventListener("submit", function(e){
+document.getElementById("userForm").addEventListener("submit", function(e){
   e.preventDefault();
 
   let name = document.getElementById("name").value;
   let email = document.getElementById("email").value;
 
-  let users = JSON.parse(localStorage.getItem("users")) || [];
+  let user = { name, email };
 
-  users.push({name, email});
+  // AJAX POST
+  let xhr = new XMLHttpRequest();
+  xhr.open("POST", "https://jsonplaceholder.typicode.com/posts", true);
+  xhr.setRequestHeader("Content-Type", "application/json");
 
-  localStorage.setItem("users", JSON.stringify(users));
+  xhr.onload = function() {
+    if (xhr.status === 201) {
 
-  alert("User Added!");
+      // Save to localStorage
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      users.push(user);
+      localStorage.setItem("users", JSON.stringify(users));
 
-  form.reset();
-  updateCount();
+      alert("User Registered Successfully!");
+      document.getElementById("userForm").reset();
+    }
+  };
+
+  xhr.send(JSON.stringify(user));
 });
-
-function updateCount(){
-  let users = JSON.parse(localStorage.getItem("users")) || [];
-  document.getElementById("totalUsers").innerText = users.length;
-}
-
-updateCount();
 </script>
 
 </body>
